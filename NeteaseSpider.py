@@ -45,5 +45,9 @@ itemlist = list()
 for year in range(1970, datetime.datetime.now().year):
     for month in range(1, 12):
         for day in range(1, calendar.monthrange(year, month)):
-            for items in jsonFormat(year, month, day):
-                itemlist.append(items)
+            tmplist = jsonFormat(year, month, day)
+            if tmplist is None:
+                continue
+            else:
+                for items in tmplist:
+                    itemlist.append(items)
