@@ -1,8 +1,8 @@
 import calendar
 import datetime
 import json
-
 import re
+import gc
 import requests
 
 
@@ -27,28 +27,33 @@ def dateFormat(year=1970, month=1, day=1):
 def jsonFormat(year=1970, month=1, day=1):
     text = getJson(year, month, day)
     returnValue = list()
-    if text.startwith('var data=') is False:
-        returnValue = list()
-    else:
+    if text.startswith('var data=') is True:
         tmp = re.sub(',*,', ',', text.lstrip('var data=').rstrip(';').replace('\n', '').replace(',[]', ''))
         tmpValue = json.loads(tmp)
         for list0 in tmpValue[u'news']:
             for list1 in list0:
                 returnValue = list().append(
                     (list1[u'p'].split()[0], list1[u'p'].split()[1], list1[u'c'], list1[u'l'], list1[u't']))
-
+        del tmpValue
+        del text
+        del tmp
     return returnValue
 
 
-itemlist = list()
+def main():
+    itemlist = list()
+    for year in range(1970, datetime.datetime.now().year):
+        for month in range(1, 12):
+            for day in range(1, calendar.monthrange(year, month)[1]):
+                jsonlist = jsonFormat(year, month, day)
+                if jsonlist is None:
+                    del jsonlist
+                else:
+                    for items in jsonlist:
+                        itemlist.append(items)
+                    del jsonlist
+                gc.collect()
 
-for year in range(1970, datetime.datetime.now().year):
-    for month in range(1, 12):
-        for day in range(1, calendar.monthrange(year, month)):
-            tmplist = jsonFormat(year, month, day)
-            if tmplist is None:
-                continue
-            else:
-                for items in tmplist:
-                    itemlist.append(items)
-                  
+
+if __name__ == '__main__':
+    main()
