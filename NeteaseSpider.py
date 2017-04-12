@@ -27,7 +27,7 @@ def dateFormat(year=1970, month=1, day=1):
 def jsonFormat(year=1970, month=1, day=1):
     text = getJson(year, month, day)
     returnValue = list()
-    if text.startwith('var data=') is True:
+    if text.startswith('var data=') is True:
         tmp = re.sub(',*,', ',', text.lstrip('var data=').rstrip(';').replace('\n', '').replace(',[]', ''))
         tmpValue = json.loads(tmp)
         for list0 in tmpValue[u'news']:
@@ -40,11 +40,11 @@ def jsonFormat(year=1970, month=1, day=1):
     return returnValue
 
 
-def main(self):
+def main():
     itemlist = list()
     for year in range(1970, datetime.datetime.now().year):
         for month in range(1, 12):
-            for day in range(1, calendar.monthrange(year, month)):
+            for day in range(1, calendar.monthrange(year, month)[1]):
                 jsonlist = jsonFormat(year, month, day)
                 if jsonlist is None:
                     del jsonlist
