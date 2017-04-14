@@ -1,9 +1,35 @@
 import calendar
 import datetime
+import gc
 import json
 import re
-import gc
+
 import requests
+
+
+def getSiteURL(sitename=0):
+    siteList = [('新闻', 'http://news.163.com/special/0001220O/news_json.js',
+                 'http://snapshot.news.163.com/wgethtml/http+!!news.163.com!special!0001220O!news_json.js/'),
+                ('娱乐', 'http://ent.163.com/special/00032IAD/ent_json.js',
+                 'http://snapshot.news.163.com/wgethtml/http+!!ent.163.com!special!00032IAD!ent_json.js/'),
+                ('体育', 'http://sports.163.com/special/0005rt/news_json.js',
+                 'http://snapshot.news.163.com/wgethtml/http+!!sports.163.com!special!0005rt!news_json.js/'),
+                ('财经', 'http://money.163.com/special/00251G8F/news_json.js',
+                 'http://snapshot.news.163.com/wgethtml/http+!!money.163.com!special!00251G8F!news_json.js/'),
+                ('科技', 'http://tech.163.com/special/00094IHV/news_json.js',
+                 'http://snapshot.news.163.com/wgethtml/http+!!tech.163.com!special!00094IHV!news_json.js/'),
+                ('手机', 'http://mobile.163.com/special/00112GHS/phone_json.js',
+                 'http://snapshot.news.163.com/wgethtml/http+!!tech.163.com!mobile!special!00112GHS!phone_json.js/'),
+                ('女人', 'http://lady.163.com/special/00264IIC/lady_json.js',
+                 'http://snapshot.news.163.com/wgethtml/http+!!lady.163.com!special!00264IIC!lady_json.js/')]
+    return siteList[sitename]
+
+
+def getChildClassification(category):
+    returnValue = list()
+    for elem in category:
+        returnValue.append(elem[0])
+    return returnValue
 
 
 def getJson(year=1970, month=1, day=1):
@@ -34,9 +60,6 @@ def jsonFormat(year=1970, month=1, day=1):
             for list1 in list0:
                 returnValue = list().append(
                     (list1[u'p'].split()[0], list1[u'p'].split()[1], list1[u'c'], list1[u'l'], list1[u't']))
-        del tmpValue
-        del text
-        del tmp
     return returnValue
 
 
