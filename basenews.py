@@ -18,6 +18,6 @@ def getanews(URL):
     return date
 
 
-# Debug purpose only, remove it after spider has completed
+# Debug only, remove it after spider has completed
 if __name__ == '__main__':
     getanews('http://ent.163.com/17/0413/21/CHUBHJ7C00038FO9.html')
