@@ -93,9 +93,10 @@ def main():
                         del jsonlist
                     else:
                         for items in jsonlist:
-                            sendToMongodb(
-                                {'date': items[0], 'time': items[1], 'class': items[2], 'childclass': items[3],
-                                 'url': items[4], 'title': items[5], 'content': getanews(items[4])})
+                            if items[4].find('photoview') is -1:
+                                sendToMongodb(
+                                    {'date': items[0], 'time': items[1], 'class': items[2], 'childclass': items[3],
+                                     'url': items[4], 'title': items[5], 'content': getanews(items[4])})
                         del jsonlist
                     gc.collect()
 
