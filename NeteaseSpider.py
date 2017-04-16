@@ -91,7 +91,7 @@ def main():
                     jsonlist = jsonFormat(year, month, day, newsType)
                     if jsonlist is not None:
                         for items in jsonlist:
-                            if items[4].find('photoview') is -1:
+                            if items[4].find('photoview') is -1 or items[4].find('blog') is -1:
                                 sendToMongodb(
                                     {'date': items[0], 'time': items[1], 'class': items[2], 'childclass': items[3],
                                      'url': items[4], 'title': items[5], 'content': getanews(items[4])})
