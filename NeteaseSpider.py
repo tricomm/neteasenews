@@ -89,15 +89,13 @@ def main():
             for day in range(1, calendar.monthrange(year, month)[1]):
                 for newsType in range(0, 6):
                     jsonlist = jsonFormat(year, month, day, newsType)
-                    if jsonlist is None:
-                        del jsonlist
-                    else:
+                    if jsonlist is not None:
                         for items in jsonlist:
                             if items[4].find('photoview') is -1:
                                 sendToMongodb(
                                     {'date': items[0], 'time': items[1], 'class': items[2], 'childclass': items[3],
                                      'url': items[4], 'title': items[5], 'content': getanews(items[4])})
-                        del jsonlist
+                    del jsonlist
                     gc.collect()
 
 
