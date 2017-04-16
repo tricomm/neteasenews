@@ -1,5 +1,7 @@
-import re
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 
+import re
 import requests
 from bs4 import BeautifulSoup
 
@@ -18,6 +20,6 @@ def getanews(URL):
     return date
 
 
-# Debug only, remove it after spider has completed
+# 调试用，完成后移除
 if __name__ == '__main__':
     getanews('http://ent.163.com/17/0413/21/CHUBHJ7C00038FO9.html')
