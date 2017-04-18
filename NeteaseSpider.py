@@ -93,7 +93,7 @@ def getnews(URL):
     date = str()
     html = requests.get(URL)
     soup = BeautifulSoup(html.text, 'html.parser')
-    all = soup.find(id="endText")
+    all = soup.find_all('div', id="endText")
     for p_tag in all.find_all(re.compile("p")):
         if not p_tag.string is None:
             date += u'\n' + p_tag.text
@@ -103,7 +103,7 @@ def getnews(URL):
 # 网易的接口最多只能获取到2014年3月22日的新闻。再往前也有对应的接口，不过已经无法工作
 # 如果改用腾讯的接口，虽然能获取到2009年1月1日的新闻，但网页处理方面比较麻烦（主要是腾讯的网页改过版），放弃
 def main():
-    for year in range(2015, datetime.datetime.now().year + 1):
+    for year in range(2014, datetime.datetime.now().year + 1):
         for month in range(1, 13):
             for day in range(1, calendar.monthrange(year, month)[1] + 1):
                 for newsType in range(0, 7):
@@ -113,8 +113,8 @@ def main():
                             sendToMongodb(
                                 {'date': items[0], 'time': items[1], 'class': items[2], 'childclass': items[3],
                                  'url': items[4], 'title': items[5], 'content': getnews(str(items[4]))})
-                            # del jsonlist
-                            # gc.collect()
+                        del jsonlist
+                        gc.collect()
 
 
 if __name__ == '__main__':
