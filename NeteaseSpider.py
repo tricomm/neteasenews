@@ -93,12 +93,14 @@ def getnews(URL):
     date = str()
     html = requests.get(URL)
     soup = BeautifulSoup(html.text, 'html.parser')
-    all = soup.find_all('div', id="endText")
-    for p_tag in all.find_all(re.compile("p")):
-        if not p_tag.string is None:
-            date += u'\n' + p_tag.text
+    alls = soup.find_all('div', id="endText")
+    for div in alls:         #re.compile("p")
+        for p_tag in div.find_all('p'):
+            if not p_tag.has_attr('class'):
+                if not p_tag.string is None:
+                    #print ('\n'+p_tag.text)
+                    date += p_tag.text + u'\n'
     return date
-
 
 # 网易的接口最多只能获取到2014年3月22日的新闻。再往前也有对应的接口，不过已经无法工作
 # 如果改用腾讯的接口，虽然能获取到2009年1月1日的新闻，但网页处理方面比较麻烦（主要是腾讯的网页改过版），放弃
