@@ -41,11 +41,21 @@ def getJson(year=2014, month=1, day=1, newsType=0):
     if year == datetime.datetime.now().year and \
                     month == datetime.datetime.now().month and \
                     day == datetime.datetime.now().day:
-        r = requests.get(getSiteURL(newsType)[1])
+        while True:
+            try:
+                r = requests.get(getSiteURL(newsType)[1])
+            except:
+                continue
+            break
     else:
-        r = requests.get(
-            getSiteURL(newsType)[2] + dateFormat(
-                year, month, day) + '/0.js')
+        while True:
+            try:
+                r = requests.get(
+                    getSiteURL(newsType)[2] + dateFormat(
+                        year, month, day) + '/0.js')
+            except:
+                continue
+            break
     return r.text
 
 
@@ -92,15 +102,16 @@ def sendToMongodb(insertData):
 def getnews(URL):
     date = str()
     html = requests.get(URL)
-    soup = BeautifulSoup(html.text, 'html.parser')
+    avoid_none_endText = html.text.replace('<div id="endText"></p><p>', '<div id="endText"><p>')
+    avoidScriptInResult = re.sub(r'<script.*?</script>', '', avoid_none_endText)
+    soup = BeautifulSoup(avoidScriptInResult, 'html.parser')
     alls = soup.find_all('div', id="endText")
-    for div in alls:         #re.compile("p")
+    for div in alls:
         for p_tag in div.find_all('p'):
-            if not p_tag.has_attr('class'):
-                if not p_tag.string is None:
-                    #print ('\n'+p_tag.text)
-                    date += p_tag.text + u'\n'
+            if p_tag.text is not None:
+                date += p_tag.text + u'\n'
     return date
+
 
 # 网易的接口最多只能获取到2014年3月22日的新闻。再往前也有对应的接口，不过已经无法工作
 # 如果改用腾讯的接口，虽然能获取到2009年1月1日的新闻，但网页处理方面比较麻烦（主要是腾讯的网页改过版），放弃
@@ -117,6 +128,14 @@ def main():
                                  'url': items[4], 'title': items[5], 'content': getnews(str(items[4]))})
                         del jsonlist
                         gc.collect()
+
+
+## TODO:程序崩溃时保留状态，以便恢复
+# def restoreProcess():
+
+
+## TODO:从上次的状态中恢复
+# def recoveryFromCrash():
 
 
 if __name__ == '__main__':
