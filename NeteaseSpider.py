@@ -5,7 +5,8 @@ import calendar
 import datetime
 import gc
 import json
-import re
+import random
+import regex as re
 
 import requests
 from bs4 import BeautifulSoup
@@ -30,6 +31,20 @@ def getSiteURL(sitename=0):
     return siteList[sitename]
 
 
+## 由于程序经常因为网络原因崩溃，所以把所有网络处理的部分集中到一个函数。
+## 如果这个方法依旧不行就考虑按照TODO列表里的Save&Load大法
+def networkExceptionCatch(url):
+    while True:
+        try:
+            ## 地址后加一个看起来没卵用的随机数是为了防止运营商的缓存命中。
+            ## 一旦命中，返回的东西鬼知道是什么
+            r = requests.get(url + '?' + str(random.random()))
+        except:
+            continue
+        break
+    return r.text
+
+
 def getChildClassification(category):
     returnValue = list()
     for elem in category:
@@ -41,22 +56,11 @@ def getJson(year=2014, month=1, day=1, newsType=0):
     if year == datetime.datetime.now().year and \
                     month == datetime.datetime.now().month and \
                     day == datetime.datetime.now().day:
-        while True:
-            try:
-                r = requests.get(getSiteURL(newsType)[1])
-            except:
-                continue
-            break
+        return networkExceptionCatch(getSiteURL(newsType)[2] + dateFormat(
+            year, month, day) + '/0.js')
     else:
-        while True:
-            try:
-                r = requests.get(
-                    getSiteURL(newsType)[2] + dateFormat(
-                        year, month, day) + '/0.js')
-            except:
-                continue
-            break
-    return r.text
+        return networkExceptionCatch(
+            getSiteURL(newsType)[2] + dateFormat(year, month, day) + '/0.js')
 
 
 def dateFormat(year=2014, month=1, day=1):
@@ -101,8 +105,8 @@ def sendToMongodb(insertData):
 
 def getnews(URL):
     date = str()
-    html = requests.get(URL)
-    avoid_none_endText = html.text.replace('<div id="endText"></p><p>', '<div id="endText"><p>')
+    html = networkExceptionCatch(URL)
+    avoid_none_endText = re.sub(r'(<div id="endText">)(.*?)(</p>)(<p>)', r'\1\2\4', html)
     avoidScriptInResult = re.sub(r'<script.*?</script>', '', avoid_none_endText)
     soup = BeautifulSoup(avoidScriptInResult, 'html.parser')
     alls = soup.find_all('div', id="endText")
