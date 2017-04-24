@@ -6,7 +6,7 @@ import datetime
 import gc
 import json
 import random
-import re
+import regex as re
 
 import requests
 from bs4 import BeautifulSoup
@@ -36,6 +36,8 @@ def getSiteURL(sitename=0):
 def networkExceptionCatch(url):
     while True:
         try:
+            ## 地址后加一个看起来没卵用的随机数是为了防止运营商的缓存命中。
+            ## 一旦命中，返回的东西鬼知道是什么
             r = requests.get(url + '?' + str(random.random()))
         except:
             continue
@@ -104,7 +106,7 @@ def sendToMongodb(insertData):
 def getnews(URL):
     date = str()
     html = networkExceptionCatch(URL)
-    avoid_none_endText = html.replace('<div id="endText"></p><p>', '<div id="endText"><p>')
+    avoid_none_endText = re.sub(r'(<div id="endText">)(.*?)(</p>)(<p>)', r'\1\2\4', html)
     avoidScriptInResult = re.sub(r'<script.*?</script>', '', avoid_none_endText)
     soup = BeautifulSoup(avoidScriptInResult, 'html.parser')
     alls = soup.find_all('div', id="endText")
